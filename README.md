@@ -4,7 +4,7 @@ All components - the environment, the agent, the training pipeline, the visualis
 
 
 <p align="center">
-  <img src="FlappyBird_Banner.gif" width="40%" alt="Flappy Bird demo banner">
+  <img src="flappy-rl/assets/FlappyBird_Banner.gif" width="40%" alt="Flappy Bird demo banner">
 </p>
 
 The project focuses on understanding tabular Q-learning in a dynamic control task with a discretised state space.  
