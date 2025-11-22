@@ -1,12 +1,11 @@
+# Reinforcement Learning for Flappy Bird  
+This repository contains a complete reinforcement learning setup for a custom Flappy Bird environment.  
+All components - the environment, the agent, the training pipeline, the visualisation, and the experimental analysis - were implemented from scratch to provide a transparent and reproducible RL workflow.
+
+
 <p align="center">
   <img src="FlappyBird_Banner.gif" width="40%" alt="Flappy Bird demo banner">
 </p>
-
-# Reinforcement Learning for Flappy Bird  
-Tabular Q-Learning — FH Graubünden, Computational & Data Science
-
-This repository contains a complete reinforcement learning setup for a custom Flappy Bird environment.  
-All components — the environment, the agent, the training pipeline, the visualisation, and the experimental analysis — were implemented from scratch to provide a transparent and reproducible RL workflow.
 
 The project focuses on understanding tabular Q-learning in a dynamic control task with a discretised state space.  
 The environment models essential game mechanics (gravity, pipe movement, collision logic), and the agent learns via ε-greedy Q-learning across several thousand episodes.
