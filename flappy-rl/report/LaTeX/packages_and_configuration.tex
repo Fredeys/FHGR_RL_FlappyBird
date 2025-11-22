@@ -1,0 +1,57 @@
+% !TEX root = documentation.tex
+
+%-------------------------
+% imports
+% ------------------------
+\usepackage[english]{babel}
+\usepackage[left=3cm,top=2.5cm,right=2.5cm,bottom=2.cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{abstract}
+\usepackage{hyperref}
+\usepackage{apacite}
+\usepackage{tabularx}
+\usepackage[affil-it]{authblk} 
+\usepackage{newtxtext} 
+\usepackage{newtxmath}
+\setkomafont{disposition}{\bfseries}
+\usepackage{lscape}
+\usepackage{pdflscape}  % für landscape-Seiten
+\usepackage{subcaption}  % für subfigures
+\usepackage{float}
+\usepackage{hyperref}
+
+
+
+%Für kommentare
+\usepackage[colorinlistoftodos]{todonotes}
+
+% Für Zahlen mit Einheiten
+\usepackage{siunitx}
+\sisetup{
+    locale = DE,
+    per-mode = symbol,
+    output-decimal-marker={.},
+    range-phrase=-,
+    range-units = single,
+    group-digits=true,
+    group-separator=\, ,
+    group-minimum-digits = 5,
+}
+%-------------------------
+% configuration
+% ------------------------
+
+% paragraph indent
+\setlength{\parindent}{0pt}
+
+% hyperlink colors
+\hypersetup{
+         colorlinks,
+         citecolor=black,
+         filecolor=black,
+         linkcolor=black,
+         urlcolor=black,
+         pdfborder=0 0 0
+}
+
+\bibliographystyle{apacite}

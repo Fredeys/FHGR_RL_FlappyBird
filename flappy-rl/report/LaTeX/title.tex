@@ -1,0 +1,33 @@
+% !TEX root = documentation.tex
+
+\titlehead{
+BSc Computational and Data Science\\
+Reinforcement Learning\\
+Instructor: Daniel Zünd\hfill
+}
+
+\title{Reinforcement Learning for Flappy Bird:\\
+Development, Training, and Analysis of a Q-Learning Agent}
+
+\subtitle{Course Assignment}
+
+\author[1,*]{Frédéric C. Kurbel}
+
+\affil[1]{University of Applied Sciences of the Grisons (FH Graubünden)}
+\affil[*]{Email: frederic.kurbel@stud.fhgr.ch}
+
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+This project investigates the application of tabular Q-learning to the classic game environment Flappy Bird.  
+A custom reinforcement learning environment was implemented, including simplified bird physics, obstacle dynamics,  
+and a discretized state representation. The agent operates with two actions (flap, do nothing) and is trained  
+over several thousand episodes using an \(\epsilon\)-greedy policy. The learning curve shows a clear increase  
+in survival time during the early training phase, followed by a stable performance plateau.  
+The results demonstrate that Q-learning, despite operating on a reduced state space, is capable of learning  
+a robust control strategy for a dynamic and partially stochastic system. Finally, the limitations of the  
+tabular approach are discussed, and potential extensions—such as a Deep Q-Network (DQN)—are proposed as  
+future work.
+\end{abstract}
