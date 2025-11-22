@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="FlappyBird_Banner.gif" width="100%" alt="Flappy Bird demo banner">
+  <img src="FlappyBird_Banner.gif" width="40%" alt="Flappy Bird demo banner">
 </p>
 
 # Reinforcement Learning for Flappy Bird  
