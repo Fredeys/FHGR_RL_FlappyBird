@@ -1,5 +1,5 @@
 <p align="center">
-  <video src="FlappyBird_Vid.mov" width="100%" controls muted loop></video>
+  <img src="FlappyBird_Banner.gif" width="100%" alt="Flappy Bird demo banner">
 </p>
 
 # Reinforcement Learning for Flappy Bird  
