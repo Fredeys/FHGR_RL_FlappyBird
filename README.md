@@ -12,6 +12,7 @@ The environment models essential game mechanics (gravity, pipe movement, collisi
 
 ---
 
+
 ## 1. Project Overview
 
 The goal is to evaluate whether a simple tabular Q-learning agent can learn a stable policy in a sequential decision problem.  
