@@ -34,23 +34,74 @@
 % section: mit Nummer
 %section*: ohne Nummer
 \section{Introduction}
-\label{Kap1}
 Reinforcement learning (RL) is an approach to machine learning in which an agent gradually learns a strategy through direct 
 interaction with an environment. The agent receives feedback in the form of 
 rewards or penalties and adjusts its behavior to improve the long-term overall reward. 
+
+In this project, the game Flappy Bird is recreated as a reinforcement learning
+environment to illustrate core RL concepts in a compact and intuitive setting.
+The detailed structure and dynamics of the Flappy Bird environment are described in Section~\ref{sec:environment_model}.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\linewidth]{figures/FlappyBird_Intro}
+    \caption{Overview of the Flappy Bird reinforcement learning environment}
+    \label{fig:flappybird_rl}
+\end{figure}
+\label{Kap1}
+
 RL is often used in scenarios where decisions must be made sequentially and 
 the agent must discover the relationship between action and subsequent consequence on its own.
 
-For this project, the game \textit{Flappy Bird} was recreated as an RL environment. The task is well suited to convey central RL concepts, because the game offers only two possible actions but still represents a non-trivial control problem. Small mistakes immediately lead to the game ending, which makes learning challenging. At the same time, the setting provides a clear structure: the agent moves in a continuous state, interacts with dynamic obstacles, and must find a balance between stability and rapid decision-making.
+The task is well suited to convey central RL concepts, because the game offers only two possible actions but still represents a non-trivial control problem. Small mistakes immediately lead to the game ending, which makes learning challenging. At the same time, the setting provides a clear structure: the agent moves in a continuous state, interacts with dynamic obstacles, and must find a balance between stability and rapid decision-making.
 
 In contrast to complex RL models, this project deliberately uses a tabular Q-learning approach. This keeps the learning process comprehensible, as all Q-values are stored transparently and can be interpreted. The game’s continuous state space is discretized, making the application of tabular methods possible. The goal is to examine to what extent such an agent is capable of developing a stable policy that significantly improves survival in the game.
 
 The focus is on three areas: modeling the environment, developing and training the Q-learning agent, and subsequently evaluating the learned behavior. The combination of a self-implemented environment, a clearly defined reward structure, and the subsequent visualization provides a transparent and practice-oriented introduction to fundamental concepts of reinforcement learning.
 
 \section{Related Work}
+
 Q-learning is one of the classical methods of reinforcement learning and was first formalized by Watkins and Dayan~\cite{watkins1992qlearning}. The approach is particularly suitable for environments with discrete state and action spaces, since the Q-function can be represented in tabular form. The value updates follow a clearly defined update rule based on the Bellman optimality equation. By combining the estimation of future rewards with iterative improvement, the Q-table gradually approaches an optimal policy.
 
-For RL projects such as Flappy Bird, the representation of the MDP (Markov Decision Process) is central. In the standard works of Sutton and Barto~\cite{sutton2018reinforcement}, the fundamentals of the MDP formalism and the role of exploration and exploitation are described in detail. The authors especially emphasize the importance of $\epsilon$-greedy strategies in order to achieve a meaningful balance between exploring and exploiting existing knowledge. These concepts form the basis for tabular RL methods, as also used in this project.
+\begin{table}[h!]
+\centering
+\caption{Comparison of reinforcement learning algorithms for the Flappy Bird environment}
+\label{tab:rl_comparison}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccc}
+\hline
+\textbf{Algorithm} & \textbf{Advantages} & \textbf{Disadvantages} & \textbf{Suitability} \\
+\hline
+Q-Learning (tabular) 
+& Simple, interpretable, low compute 
+& Requires discretisation, poor scalability 
+& High \\
+\hline
+SARSA 
+& On-policy stability, safer updates 
+& Slower convergence, policy-dependent 
+& Medium \\
+\hline
+Deep Q-Network (DQN) 
+& Handles continuous states, pixel input 
+& High complexity, low interpretability 
+& Low \\
+\hline
+Policy Gradient 
+& Direct policy optimisation 
+& High variance, sample inefficient 
+& Low \\
+\hline
+Actor-Critic 
+& Stable learning, continuous control 
+& Complex architecture, harder tuning 
+& Low \\
+\hline
+\end{tabular}
+}
+\end{table}
+Tabular Q-learning was selected for this project because it provides a transparent and easily interpretable learning mechanism that is well suited for environments with small discrete action spaces. In contrast to deep reinforcement learning approaches, Q-learning does not require neural networks or large computational resources, which allows the learning dynamics to be analysed directly. This makes it particularly appropriate for an educational setting and for studying the influence of state discretisation and reward design.
+
+For RL projects such as Flappy Bird, the representation of the MDP (Markov Decision Process) is central. In the standard works of Sutton and Barto~\cite{sutton2018reinforcement}, the fundamentals of the MDP formalism and the role of exploration and exploitation are described in detail. The authors especially emphasize the importance of $\epsilon$-greedy strategies in order to achieve a meaningful balance between exploring and exploiting existing knowledge. Here, an $\epsilon$-greedy strategy is used, in which the agent selects a random action with probability ε to encourage exploration, while exploiting the current best-known action otherwise.These concepts form the basis for tabular RL methods, as also used in this project.d
 
 In the literature, several works can be found that use Flappy Bird as an RL test environment. The game combines a simple and easily understandable rule set with immediate and strongly negative consequences for wrong decisions, which makes it well suited for RL experiments. Several works and open-source projects use Deep Q-Networks (DQN) to process pixel-based inputs, as in the early implementations by Mnih et al.~\cite{mnih2015dqn}, which showed that neural networks can learn complex policies from image data. For the context of this project, however, a tabular variant is more appropriate, because it enables a more transparent understanding of the learning processes and requires significantly fewer computational resources.
 
@@ -66,6 +117,7 @@ reward function, and designing the agent's learning strategy.
 
 
 \subsection{Environment Model}
+\label{sec:environment_model}
 
 The Flappy Bird environment was implemented entirely in Python. It replicates the basic game physics: gravity, jump momentum, continuous movement of the pipes, and collision detection. Since Q-learning requires a finite state space, the environment was deliberately simplified and reduced to the components relevant for control. The game logic is
 deterministic, apart from the random height of newly appearing pipes.
@@ -96,15 +148,24 @@ The simplicity of the action space makes Q-learning an appropriate method in thi
 
 \subsection{Reward Structure}
 
-The reward function is designed to directly reflect the game's main objective:  
-surviving for as long as possible. The agent receives:
+The reward function is designed to directly reflect the game’s main objective:
+maximizing survival time. At each timestep, the agent receives a small positive
+reward as long as it remains alive, while a collision with a pipe, the ground,
+or the ceiling results in a terminal negative reward:
 \begin{itemize}
-    \item a small positive reward for every timestep it remains alive
-    \item a large negative reward in case of a collision (pipe, ground, or ceiling)
+    \item a reward of $+0.1$ for every timestep survived,
+    \item a penalty of $-10.0$ upon collision.
 \end{itemize}
 
-This setup encourages the agent to maintain stable flight over time.  
-Rewarding points instead of survival steps would also be possible, but typically leads to less stable learning behaviour, since points occur less frequently than survival events.
+The absolute reward values are less important than their relative magnitude.
+The chosen scaling ensures that a single collision outweighs many survival
+steps, thereby encouraging long-term stable flight rather than short-term or
+aggressive behaviour. This formulation provides a dense learning signal while
+preserving a clear optimization objective.
+
+Alternative reward designs, such as rewarding only successful pipe passages,
+are possible but typically lead to less stable learning behaviour, as such
+events occur less frequently than survival steps.
 
 \subsection{Q-Learning}
 
@@ -114,6 +175,9 @@ The update rule follows the standard formulation:
 \[
 Q(s,a) \leftarrow Q(s,a) + \alpha \Bigl( r + \gamma \max_{a'} Q(s', a') - Q(s,a) \Bigr)
 \]
+The learning rate $\alpha$ was set to $0.10$ for the main training run. 
+While smaller values lead to smoother updates, they require substantially more episodes to reach comparable performance. 
+The chosen value therefore represents a practical trade-off between learning speed and stability.
 
 \begin{itemize}
     \item \(\alpha\) denotes the learning rate
@@ -222,6 +286,9 @@ All relevant training data is stored automatically:
 
 After training, the policy can be evaluated immediately without recompiling or running additional code.
 
+Training was performed locally on a standard consumer laptop. 
+Due to the low computational complexity of tabular Q-learning, training time was moderate and not a limiting factor for the experiments.
+
 \subsection{Hyperparameters and Configuration}
 
 A consistent configuration was used across all experiments. The key parameters are:
@@ -253,8 +320,8 @@ This makes qualitative properties of the learned policy visible—for example, h
 \section{Experiments}
 \label{Experiments}
 
-This section describes the experimental procedure, the training protocol, and additional tests that were conducted to better characterize the behaviour of the Q-learning agent.  
-While the methods section focuses on conceptual aspects and the setup outlines the technical environment, the following part documents the practical execution of the experiments and the parameters used.
+This section presents the experimental results obtained with the Q-learning agent and discusses the observed learning behaviour. 
+All methodological details regarding the environment, training procedure, and evaluation setup have been described in the previous section.
 
 \subsection{Training Protocol}
 
@@ -268,6 +335,7 @@ This results in a complete temporal trace of the agent’s learning behaviour, w
 
 Training consisted of a total of 10\,000 episodes.  
 This number proved sufficient to stabilize the agent and make typical fluctuations in the learning curve clearly visible.
+For the ablation experiments, shorter training runs of 1\,000 to 2\,000 episodes were used, as these tests aimed to highlight qualitative effects of individual hyperparameters rather than achieve full convergence.
 
 \subsection{Reproducibility and Seeds}
 
@@ -413,20 +481,17 @@ reinforcement learning concepts. No ethical risks are therefore apparent.
 
 \section{Conclusion \& Future Work}
 
-The experiments conducted show that a tabular Q-learning agent is capable of learning functional control for Flappy Bird, even though the environment is dynamic and sensitive to small errors. The learning curve indicates that the agent stabilizes after a short initial phase and develops consistent behavior over several episodes. The qualitative assessment in evaluation mode confirms this: The agent responds predictably to different pipe configurations and, in many cases, stays in the air for extended periods of time. The model thus fulfills the central objective of the project.
-Despite the positive results, the approach is clearly limited by its structure. The discretization of the state space reduces the precision of perception and directly influences the
-behavior of the agent. The size of the Q-table also imposes practical limits as soon as the state space is expanded. The work thus demonstrates both the potential and the limitations of tabular methods in dynamic control tasks.
+The experiments demonstrate that a tabular Q-learning agent is capable of learning a functional control policy for the Flappy Bird environment, despite its dynamic nature and sensitivity to small errors. The learning curve shows a clear progression from near-random behaviour in early episodes toward a more stable policy, followed by a plateau that indicates convergence under the chosen state discretisation and hyperparameter configuration.
 
+The evaluation runs confirm that the learned policy is non-trivial. Without exploration, the agent consistently survives longer than during early training phases and exhibits coherent reactions to varying pipe configurations. While no direct comparison to alternative reinforcement learning algorithms is performed, the results are positive in the methodological sense: learning progress is observable, reproducible, and achieved with a comparatively simple model and moderate training effort. This fulfils the primary objective of the project, which was to analyse and illustrate the behaviour of tabular Q-learning in a dynamic control task rather than to optimise absolute performance.
 
-There are several possibilities for future work. The most obvious
-step is to replace the tabular representation with a function approximator such as a
-Deep Q-Network (DQN). A neural network could better map the continuous state space
-and increase the policy's generalization ability. In addition, a modified reward structure could be investigated, for example, by adding rewards for
-approaching the pipe opening or for successful passages. Such adjustments could make the learning signal more stable.
+At the same time, the limitations of the approach are clearly visible. The discretisation of the continuous state space reduces perceptual precision and directly constrains the quality of the learned policy. Furthermore, the size of the Q-table grows rapidly with finer state resolution, which limits scalability. The project therefore highlights both the strengths and the inherent constraints of tabular reinforcement learning methods.
 
-Another interesting direction is the use of pixel input instead of an abstracted state representation. This would bring the problem closer to modern RL applications and enable the comparison of different architectures. The use of advanced methods such as Double DQN, n-step learning, or prioritized replay would also be conceivable to further increase the stability and efficiency of the learning process.
+There are several directions for future work. A natural extension would be to replace the tabular representation with a function approximator such as a Deep Q-Network (DQN). Using a neural network would allow the agent to operate directly on continuous state representations and improve generalisation. In addition, alternative reward shaping strategies could be explored, for example by introducing intermediate rewards for approaching the pipe opening or for successfully passing obstacles, which may lead to a more stable learning signal.
 
-Overall, the project shows that even simple RL methods are capable of successfully coping with a dynamic environment. The presented extensions pave the way for more complex models and offer a broad field for in-depth investigation.
+Another promising direction is the use of pixel-based input instead of the abstracted state representation employed in this project. This would bring the problem closer to modern reinforcement learning applications and enable comparisons between different network architectures and learning variants. More advanced methods such as Double DQN, n-step learning, or prioritized experience replay could further improve stability and learning efficiency.
+
+Overall, this project shows that even relatively simple reinforcement learning methods can successfully cope with a dynamic environment when the problem is structured appropriately. The presented extensions provide a clear path toward more complex models and offer ample opportunities for deeper investigation.
 
 
 
@@ -439,4 +504,16 @@ Overall, the project shows that even simple RL methods are capable of successful
 \bibliography{library}
 
 \appendix
+\section*{Code Availability}
+
+The complete source code, experimental setup, and additional materials are
+available at:
+\href{https://github.com/Fredeys/FHGR_RL_FlappyBird}
+     {github.com/Fredeys/FHGR\_RL\_FlappyBird}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{FlappyBird_Intro.png}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
 \end{document}
